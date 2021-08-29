@@ -45,11 +45,13 @@ services:
     build:
       context: ./chat-service
       dockerfile: Dockerfile
-    volumes:
-      - ./trabalho_individual/chat-service:/chat-service
     ports:
       - "7100:7100"
+    volumes:
+      - ./chat-service:/chat-service
     depends_on:
+      - chat-service-db
+    links:
       - chat-service-db
 
   users-service:
@@ -57,10 +59,11 @@ services:
     build:
       context: ./users-service
       dockerfile: Dockerfile
-    volumes:
-      - ./trabalho_individual/users-service:/users-service
+    command: sh -c "yarn db:migrate"
     ports:
       - "7101:7101"
+    volumes:
+      - ./users-service:/users-service
     depends_on:
       - users-service-db
 
@@ -69,13 +72,28 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
-    volumes:
-      - ./trabalho_individual/api-gateway:/api-gateway
     ports:
       - "7000:7000"
+    volumes:
+      - ./api-gateway:/api-gateway
     depends_on:
       - chat-service-db
       - users-service-db
+    links:
+      - chat-service-db
+      - users-service-db
+
+  chat-app:
+    container_name: chat-app
+    build:
+      context: ./chat-app
+      dockerfile: Dockerfile
+    ports:
+      - "7001:7001"
+    volumes:
+      - ./chat-app:/chat-app
+    depends_on:
+      - api-gateway
 
 
 volumes:

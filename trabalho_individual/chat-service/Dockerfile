@@ -7,4 +7,6 @@ COPY yarn.lock ./
 
 COPY . .
 
-CMD ["yarn", " yarn watch"]
+EXPOSE 7100
+
+CMD ["yarn", "watch"]

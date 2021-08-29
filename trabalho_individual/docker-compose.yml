@@ -12,15 +12,28 @@ services:
     ports:
       - "7200:3306"
     volumes:
-      - dbdata:/var/lib/mysql
-  
+      - chat-service-db:/var/lib/mysql
+
+  users-service-db:
+    image: mysql:5.7.20
+    container_name: users-service-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db
+    ports:
+      - "7201:3306"
+    volumes:
+      - users-service-db:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     depends_on:
       - chat-service-db
+      - users-service-db
     links:
       - chat-service-db
+      - users-service-db
     restart: always
     ports:
       - 7300:80
@@ -28,6 +41,30 @@ services:
       - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 
 
+  chat-service:
+    container_name: chat-service
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./trabalho_individual/chat-service:/chat-service
+    ports:
+      - "7100:7100"
+    depends_on:
+      - chat-service-db
+
+  users-service:
+    container_name: users-service
+    build:
+      context: ./users-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./trabalho_individual/users-service:/users-service
+    ports:
+      - "7101:7101"
+    depends_on:
+      - users-service-db
+
 volumes:
-  dbdata:
   chat-service-db:
+  users-service-db:

@@ -40,7 +40,6 @@ services:
     volumes:
       - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 
-
   chat-service:
     container_name: chat-service
     build:
@@ -64,6 +63,20 @@ services:
       - "7101:7101"
     depends_on:
       - users-service-db
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    volumes:
+      - ./trabalho_individual/api-gateway:/api-gateway
+    ports:
+      - "7000:7000"
+    depends_on:
+      - chat-service-db
+      - users-service-db
+
 
 volumes:
   chat-service-db:

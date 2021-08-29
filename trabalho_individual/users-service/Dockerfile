@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /chat-app
+WORKDIR /users-service
 
 COPY package.json ./
 COPY yarn.lock ./
